@@ -1,0 +1,90 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+
+<ui:composition template="/template/base-page.xhtml">
+	<ui:define name="content">
+		<h:form id="form-customer">
+			<p:fieldset legend="Customers" style="margin-bottom:20px">
+				<h:panelGrid id="panelGrid-field-form" columns="3" cellpadding="10">
+					<p:selectOneMenu id="customer" value="#{mainController.idCustomer}"
+						panelStyle="width:180px" style="width:160px" filter="true"
+						required="true" requiredMessage="Customer is required"
+						filterMatchMode="startsWith">
+						<p:ajax event="change" update="@this" />
+						<f:selectItem itemValue="#{null}" itemLabel="Select"
+							noSelectionOption="true" />
+						<f:selectItems value="#{mainController.customers}" var="customer"
+							itemLabel="#{customer.customerName}"
+							itemValue="#{customer.customerNumber}" />
+					</p:selectOneMenu>
+					<p:spacer />
+
+					<p:commandButton value="Search" id="command-button-search"
+						update="grid" icon="ui-icon-search"
+						action="#{mainController.search}" />
+				</h:panelGrid>
+
+			</p:fieldset>
+		</h:form>
+		<h:form id="grid">
+			<p:dataTable var="order" value="#{mainController.orders}">
+				<p:column headerText="Order Number">
+					<h:outputText value="#{order.orderNumber}" />
+				</p:column>
+				<p:column headerText="Order Date">
+					<h:outputText value="#{order.orderDate}">
+						<f:convertDateTime pattern="MM/dd/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Required Date">
+					<h:outputText value="#{order.requiredDate}">
+						<f:convertDateTime pattern="MM/dd/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Shipped Date">
+					<h:outputText value="#{order.shippedDate}">
+						<f:convertDateTime pattern="MM/dd/yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Status">
+					<h:outputText value="#{order.status}" />
+				</p:column>
+				<p:column style="width:24px">
+					<p:commandLink update="order-detail-panel"
+						oncomplete="PF('documentDialog').show()" title="View Detail"
+						styleClass="ui-icon ui-icon-search">
+						<f:setPropertyActionListener value="#{order}"
+							target="#{mainController.orderSelected}" />
+					</p:commandLink>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+		<p:dialog id="dialog" header="Document Detail" showEffect="fade"
+			widgetVar="documentDialog" modal="true" resizable="false">
+			<p:outputPanel id="order-detail-panel">
+				<p:panelGrid columns="2">
+					<p:dataTable var="p"
+						value="#{mainController.orderSelected.products}">
+						<p:column headerText="Product Name">
+							<h:outputText value="#{p.productName}" />
+						</p:column>
+						<p:column headerText="Price">
+							<h:outputText value="#{p.buyPrice}" />
+						</p:column>
+					</p:dataTable>
+				</p:panelGrid>
+			</p:outputPanel>
+		</p:dialog>
+	</ui:define>
+</ui:composition>
+</html>
